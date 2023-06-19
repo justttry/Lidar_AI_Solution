@@ -78,7 +78,8 @@ def load_model(cfg, checkpoint_path = None):
 
 def quantize_net(model):
     quantize.quantize_encoders_lidar_branch(model.encoders.lidar.backbone)    
-    quantize.quantize_encoders_camera_branch(model.encoders.camera)
+    # 此处有bug
+    # quantize.quantize_encoders_camera_branch(model.encoders.camera)
     quantize.replace_to_quantization_module(model.fuser)
     quantize.quantize_decoder(model.decoder)
     model.encoders.lidar.backbone = funcs.layer_fusion_bn(model.encoders.lidar.backbone)
@@ -90,13 +91,14 @@ def main():
     parser.add_argument("--config", metavar="FILE", default="bevfusion/configs/nuscenes/det/transfusion/secfpn/camera+lidar/resnet50/convfuser.yaml", help="config file")
     parser.add_argument("--ckpt", default="model/resnet50/bevfusion-det.pth", help="the checkpoint file to resume from")
     parser.add_argument("--calibrate_batch", type=int, default=300, help="calibrate batch")
+    parser.add_argument("--save_path", default="qat/ckpt/bevfusion_ptq.pth", help="the path to save model")
     args = parser.parse_args()
 
     args.ptq_only = True
     configs.load(args.config, recursive=True)
     cfg = Config(recursive_eval(configs), filename=args.config)
 
-    save_path = 'qat/ckpt/bevfusion_ptq.pth'
+    save_path = args.save_path
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
     # set random seeds
