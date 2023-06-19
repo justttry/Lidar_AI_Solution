@@ -73,6 +73,7 @@ function compile_trt_model(){
     onnx=$base/$name.onnx
 
     if [ -f "${result_save_directory}/$name.plan" ]; then
+        echo $onnx
         echo Model ${result_save_directory}/$name.plan already build 🙋🙋🙋.
         return
     fi
@@ -91,9 +92,15 @@ function compile_trt_model(){
         output_flags+=fp16:chw,
     done
 
+    # cmd="--onnx=$base/$name.onnx ${precision_flags} ${input_flags} ${output_flags} \
+    #     --saveEngine=${result_save_directory}/$name.plan \
+    #     --memPoolSize=workspace:2048 --verbose --dumpLayerInfo \
+    #     --dumpProfile --separateProfileRun \
+    #     --profilingVerbosity=detailed --exportLayerInfo=${result_save_directory}/$name.json"
+
     cmd="--onnx=$base/$name.onnx ${precision_flags} ${input_flags} ${output_flags} \
         --saveEngine=${result_save_directory}/$name.plan \
-        --memPoolSize=workspace:2048 --verbose --dumpLayerInfo \
+        --verbose --dumpLayerInfo \
         --dumpProfile --separateProfileRun \
         --profilingVerbosity=detailed --exportLayerInfo=${result_save_directory}/$name.json"
 

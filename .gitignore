@@ -1,1 +1,7 @@
 __pycache__
+CUDA-BEVFusion/data
+CUDA-BEVFusion/bevfusion/data
+CUDA-BEVFusion/bevfusion/runs
+*/**/*.pth
+*/**/*.plan
+*/**/*.onnx

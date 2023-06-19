@@ -44,4 +44,5 @@ sm = f'{major}{minor}'
 print(sm, end='')
 "
 
-cudasm=`python3 -c "$pycode"`
+# cudasm=`python3 -c "$pycode"`
+cudasm=86

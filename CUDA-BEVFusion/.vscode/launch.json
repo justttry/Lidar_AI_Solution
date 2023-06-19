@@ -5,6 +5,225 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "bevfusion:推理",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bevfusion",
+            "args": [
+                // "example-data",
+                "dump/00001",
+                "my_resnet50int8",
+                "int8"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "MY_ENV_VAR",
+                    "value": "./tool/environment.sh"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "build",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "bevfusion:推理-dump-data",
+            "type": "python",
+            "request": "launch",
+            "program": "tool/dump-data.py",
+            "args": [
+                "--config=bevfusion/configs/nuscenes/det/transfusion/secfpn/camera+lidar/swint_v0p075/convfuser.yaml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion:量化-export-scn",
+            "type": "python",
+            "request": "launch",
+            "program": "qat/export-scn.py",
+            "args": [
+                "--ckpt=model/my_resnet50int8/bevfusion_ptq.pth",
+                "--save=model/my_resnet50int8/lidar.backbone.onnx"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion:量化-export-transfuser",
+            "type": "python",
+            "request": "launch",
+            "program": "qat/export-transfuser.py",
+            "args": [
+                "--ckpt=model/my_resnet50int8/bevfusion_ptq.pth",
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion:量化-export-camera",
+            "type": "python",
+            "request": "launch",
+            "program": "qat/export-camera.py",
+            "args": [
+                "--ckpt=model/my_resnet50int8/bevfusion_ptq.pth",
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion:量化",
+            "type": "python",
+            "request": "launch",
+            "program": "qat/ptq.py",
+            "args": [
+                "--config=bevfusion/configs/nuscenes/det/transfusion/secfpn/camera+lidar/swint_v0p075/convfuser.yaml",
+                // "--ckpt=model/my_resnet50/bevfusion-det.pth",
+                "--ckpt=bevfusion/runs/run-db751507-c263a5a3/epoch_6.pth",
+                "--calibrate_batch", "300",
+                "--save_path=model/my_resnet50int8/bevfusion_ptq.pth"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion:训练",
+            "type": "python",
+            "request": "launch",
+            "program": "tools/train.py",
+            "args": [
+                // "configs/nuscenes_test/det/centerhead/lssfpn/camera/256x704/swint/default.yaml",
+                // "--model.encoders.camera.backbone.init_cfg.checkpoint",
+                // "pretrained/swint-nuimages-pretrained.pth"
+                "configs/nuscenes/det/transfusion/secfpn/camera+lidar/swint_v0p075/convfuser.yaml",
+                "--model.encoders.camera.backbone.init_cfg.checkpoint",
+                "pretrained/swint-nuimages-pretrained.pth",
+                "--load_from","pretrained/lidar-only-det.pth"
+            ],
+            "cwd": "${workspaceFolder}/bevfusion",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion:测试",
+            "type": "python",
+            "request": "launch",
+            "program": "tools/test.py",
+            "args": [
+                "configs/nuscenes/det/transfusion/secfpn/camera+lidar/swint_v0p075/convfuser.yaml",
+                "pretrained/bevfusion-det.pth",
+                "--eval", "bbox"
+            ],
+            "cwd": "${workspaceFolder}/bevfusion",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion: 生成数据",
+            "type": "python",
+            "request": "launch",
+            "program": "tools/create_data.py",
+            "args": [
+                "nuscenes",
+                "--root-path", "./data/nuscenes",
+                "--out-dir", "./data/nuscenes",
+                "--extra-tag", "nuscenes"
+            ],
+            "cwd": "${workspaceFolder}/bevfusion",
+            "env": {
+                "MASTER_HOST": "localhost:1239",
+                "WORLD_SIZE": "1",
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "bevfusion:torchpack-获取环境参数",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/zhaoke/anaconda3/envs/bevfusion/bin/torchpack",
+            "args": [
+                "dist-run", 
+                "-np", "1",
+                "python", "tools/test.py", 
+                "configs/nuscenes/det/transfusion/secfpn/camera+lidar/swint_v0p075/convfuser.yaml", 
+                "pretrained/bevfusion-det.pth",
+                "--eval", "bbox"
+            ],
+            "cwd": "${workspaceFolder}/bevfusion",
+            // "env": {
+            //     "MASTER_HOST": "localhost",
+            //     "MASTER_PORT": "1236",
+            //     "WORLD_SIZE": "1",
+            // },
+            "console": "integratedTerminal",
+            "subProcess": true,
+            "justMyCode": false
+        },
+        // {
+        //     "name": "bevfusion:test",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "/home/zhaoke/anaconda3/envs/bevfusion/lib/python3.8/site-packages/torch/distributed/launch.py",
+        //     "args": [
+        //         "--nproc_per_node=1",
+        //         "--master_port=1236",
+        //         "tools/test.py",
+        //         "configs/nuscenes/det/transfusion/secfpn/camera+lidar/swint_v0p075/convfuser.yaml",
+        //         "pretrained/bevfusion-det.pth",
+        //         "--eval", "bbox"
+        //     ],
+        //     "cwd": "${workspaceFolder}/bevfusion",
+        //     "env": {
+        //         "MASTER_HOST": "localhost",
+        //         "MASTER_PORT": "1236",
+        //         "WORLD_SIZE": "1",
+        //     },
+        //     "console": "integratedTerminal",
+        //     "justMyCode": false
+        // },
+        {
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",

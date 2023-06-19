@@ -154,8 +154,8 @@ class ImageArtistImplement : public ImageArtist {
 
       size = std::max(size * 0.06f, 8.0f);
       auto title = nv::format("%s %.2f", name_color->name.c_str(), score);
-      cuosd_draw_text(cuosd_, title.c_str(), size, UseFont, minx, miny, {name_color->r, name_color->g, name_color->b, 255},
-                      {255, 255, 255, 200});
+      // cuosd_draw_text(cuosd_, title.c_str(), size, UseFont, minx, miny, {name_color->r, name_color->g, name_color->b, 255},
+      //                 {255, 255, 255, 200});
     }
   }
 
@@ -384,8 +384,8 @@ class BEVArtistImplement : public BEVArtist {
       if (take_title) {
         size = std::max(size * 0.02f, 5.0f);
         auto title = nv::format("%s %.2f", name_color->name.c_str(), score);
-        cuosd_draw_text(cuosd_, title.c_str(), size, UseFont, minx, miny, {name_color->r, name_color->g, name_color->b, 255},
-                        {255, 255, 255, 200});
+        // cuosd_draw_text(cuosd_, title.c_str(), size, UseFont, minx, miny, {name_color->r, name_color->g, name_color->b, 255},
+        //                 {255, 255, 255, 200});
       }
     }
   }
